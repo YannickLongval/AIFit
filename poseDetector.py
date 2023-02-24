@@ -184,10 +184,11 @@ while True:
     lmList = detector.findPosition(img)
     coords = []
     if detector.results.pose_landmarks:
-        for id, lm in enumerate(detector.results.pose_landmarks.landmark):
+        for lm in detector.results.pose_landmarks.landmark:
                     coords.append(lm.x)
                     coords.append(lm.y)
                     coords.append(lm.z)
+        # coords = [[lmk.x, lmk.y, lmk.z] for lmk in detector.results.pose_landmarks.landmark]
         print(coords)
         with torch.no_grad():
             outputs = model(torch.Tensor([coords]))
@@ -195,13 +196,14 @@ while True:
             _, prediction = torch.max(outputs, 1)
         print(prediction)
         print(encoder.classes_[prediction])
+        cv2.putText(img, str(encoder.classes_[prediction]), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
     cTime = time.time()
     fps = 1/(cTime - pTime)
     pTime = cTime
 
     
 
-    cv2.putText(img, "FPS: " + str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
+    # cv2.putText(img, "FPS: " + str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
 
     cv2.imshow("Image", img)
     key = cv2.waitKey(1)
